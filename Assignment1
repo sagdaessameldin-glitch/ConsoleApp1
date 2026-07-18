@@ -1,0 +1,151 @@
+
+namespace C_02G01
+{
+    internal class Program
+    {
+        static void Main()
+        {
+            #region Q1 - Book as object
+            Book book1 = new Book { Title = "The Hobbit", Pages = 310 };
+            object myBook = book1;
+
+            Console.WriteLine(myBook);
+            #endregion
+
+            #region Q2 - Universal Methods on Book
+            Book book2 = new Book { Title = "1984", Pages = 328 };
+
+            Console.WriteLine(book2.ToString());
+            Console.WriteLine(book2.Equals(book2));
+            Console.WriteLine(book2.GetHashCode());
+            Console.WriteLine(book2.GetType());
+            #endregion
+
+            #region Q3 - Compile Time Error Fix
+            int pages3 = int.Parse("300");
+            Console.WriteLine(pages3);
+            #endregion
+
+            #region Q4 - Try Catch Finally
+            try
+            {
+                int x = 10;
+                int y = 0;
+
+                Console.WriteLine(x / y);
+            }
+            catch (DivideByZeroException ex)
+            {
+                Console.WriteLine("Cannot divide by zero");
+            }
+            finally
+            {
+                Console.WriteLine("Done");
+            }
+            #endregion
+
+            #region Q5 - Implicit Convert int => double
+            int pages5 = 300;
+            double pagesAsDouble = pages5;
+
+            Console.WriteLine(pagesAsDouble);
+            #endregion
+
+            #region Q6 - Explicit Convert double => int
+            double price = 49.99;
+            int priceAsInt = (int)price;
+
+            Console.WriteLine(priceAsInt);
+            #endregion
+
+            #region Q7 - Convert Class
+            string pagesText7 = "464";
+            int pages7 = Convert.ToInt32(pagesText7);
+
+            Console.WriteLine(pages7);
+            #endregion
+
+            #region Q8 - Parse & TryParse
+            string yearText = "2023";
+            int year8 = int.Parse(yearText);
+            Console.WriteLine(year8);
+
+            string badText = "abc";
+            bool isValid = int.TryParse(badText, out int result);
+
+            if (isValid)
+            {
+                Console.WriteLine(result);
+            }
+            else
+            {
+                Console.WriteLine("Invalid number");
+            }
+            #endregion
+
+            #region Q9 - int ToString + GetType
+            int pages9 = 464;
+            string pagesText9 = pages9.ToString();
+
+            Console.WriteLine(pagesText9.GetType());
+            #endregion
+
+            #region Q10 - Boxing & UnBoxing
+            int copies = 100;
+
+            object boxed = copies;
+            int unboxed = (int)boxed;
+
+            Console.WriteLine(boxed);
+            Console.WriteLine(unboxed);
+            #endregion
+
+            #region Q11 - Nullable int
+            int? year11 = null;
+            Console.WriteLine(year11.HasValue);
+
+            year11 = 2023;
+            Console.WriteLine(year11.Value);
+            #endregion
+
+            #region Q12 - Nullable string
+            string? reviewer = null;
+            Console.WriteLine(reviewer == null);
+            #endregion
+
+            #region Q13 - Null Conditional Operator ?.
+            Book? book13 = null;
+            string? title13 = book13?.Title;
+
+            Console.WriteLine(title13);
+            #endregion
+
+            #region Q14 - Null Coalescing ?? and ??=
+            string? title14 = null;
+
+            Console.WriteLine(title14 ?? "Untitled");
+
+            title14 ??= "Untitled";
+            Console.WriteLine(title14);
+            #endregion
+
+            #region Q15 - Null Forgiving Operator !
+            string? name = "Ahmed";
+            string confirmedName = name!;
+
+            Console.WriteLine(confirmedName);
+            #endregion
+        }
+    }
+
+    public class Book
+    {
+        public string Title { get; set; }
+        public int Pages { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Title} ({Pages} pages)";
+        }
+    }
+}
