@@ -1,0 +1,113 @@
+
+class Program
+{
+    static void Main()
+    {
+        // Question 01
+        int pages = 464;
+
+        if (pages > 300)
+        {
+            Console.WriteLine("Long Book");
+        }
+        else
+        {
+            Console.WriteLine("Short Book");
+        }
+
+
+        // Question 02
+        bool isAvailable = true;
+
+        if (pages > 300 && isAvailable == true)
+        {
+            Console.WriteLine("You can borrow this book");
+        }
+
+
+        // Question 03
+        string title = "Refactoring";
+
+        switch (title)
+        {
+            case "Clean Code":
+                Console.WriteLine("Great choice!");
+                break;
+
+            case "Refactoring":
+                Console.WriteLine("Nice pick!");
+                break;
+
+            default:
+                Console.WriteLine("Never heard of it");
+                break;
+        }
+
+
+        // Books Array
+        string[] books = {
+            "Clean Code",
+            "The Pragmatic Programmer",
+            "Refactoring"
+        };
+
+
+        // Question 04
+        for (int i = 0; i < books.Length; i++)
+        {
+            Console.WriteLine((i + 1) + ". " + books[i]);
+        }
+
+
+        // Question 05
+        int x = 0;
+
+        while (x < books.Length)
+        {
+            Console.WriteLine(books[x]);
+            x++;
+        }
+
+
+        // Question 06
+        int y = 0;
+
+        do
+        {
+            Console.WriteLine("Checking book...");
+            y++;
+        }
+        while (y < 3);
+
+
+        // Question 07
+        foreach (string book in books)
+        {
+            Console.WriteLine(book);
+        }
+
+
+        // Question 08
+        foreach (string book in books)
+        {
+            if (book == "Refactoring")
+            {
+                break;
+            }
+
+            Console.WriteLine(book);
+        }
+
+
+        // Question 09
+        foreach (string book in books)
+        {
+            if (book == "The Pragmatic Programmer")
+            {
+                continue;
+            }
+
+            Console.WriteLine(book);
+        }
+    }
+}
