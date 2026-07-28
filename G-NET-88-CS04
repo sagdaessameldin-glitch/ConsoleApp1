@@ -1,0 +1,179 @@
+
+
+namespace Consouelapp2
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            #region Functions
+
+            #region Q1 Print Welcome Message
+
+            PrintWelcomeMessage();
+
+            #endregion
+
+
+            #region Q2 Print Book Title
+
+            PrintBookTitle("Clean Code");
+
+            #endregion
+
+
+            #region Q3 Passing Value Type By Value
+
+            int pages = 400;
+
+            AddBonusPages(pages);
+
+            Console.WriteLine(pages);
+
+            // Expected Output: 400
+            // Because int is a Value Type
+            // The method receives a copy of the value
+
+            #endregion
+
+
+            #region Q4 Passing Reference Type By Value
+
+            double[] prices = { 25.5, 40.0 };
+
+            ApplyDiscount(prices);
+
+            Console.WriteLine(prices[0]);
+
+            // Expected Output: 20.5
+            // Because Array is a Reference Type
+            // The method can change the original array elements
+
+            #endregion
+
+
+            #region Q5 Passing Value Type By Reference
+
+            int bonusPages = 400;
+
+            AddBonusPagesByRef(ref bonusPages);
+
+            Console.WriteLine(bonusPages);
+
+            // Expected Output: 450
+            // Because ref allows the method to change
+            // the original variable
+
+            #endregion
+
+
+            #region Q6 Optional Parameters
+
+            PrintBookInfo("Clean Code");
+
+            PrintBookInfo("The Pragmatic Programmer", 350);
+
+            #endregion
+
+
+            #region Q7 Named Parameters
+
+            PrintBookInfo(pages: 500, title: "Clean Code");
+
+            #endregion
+
+
+            #region Q8 Params
+
+            PrintAllTitles(
+                "Clean Code",
+                "The Pragmatic Programmer",
+                "C# in Depth"
+            );
+
+            #endregion
+
+            #endregion
+        }
+
+
+        #region Functions
+
+
+        #region Q1 Print Welcome Message
+
+        public static void PrintWelcomeMessage()
+        {
+            Console.WriteLine("Welcome to the Library");
+        }
+
+        #endregion
+
+
+        #region Q2 Print Book Title
+
+        public static void PrintBookTitle(string title)
+        {
+            Console.WriteLine("Book title: " + title);
+        }
+
+        #endregion
+
+
+        #region Q3 Passing Value Type By Value
+
+        public static void AddBonusPages(int pages)
+        {
+            pages += 50;
+        }
+
+        #endregion
+
+
+        #region Q4 Passing Reference Type By Value
+
+        public static void ApplyDiscount(double[] prices)
+        {
+            prices[0] -= 5;
+        }
+
+        #endregion
+
+
+        #region Q5 Passing Value Type By Reference
+
+        public static void AddBonusPagesByRef(ref int pages)
+        {
+            pages += 50;
+        }
+
+        #endregion
+
+
+        #region Q6 Optional Parameters
+
+        public static void PrintBookInfo(string title, int pages = 300)
+        {
+            Console.WriteLine("Book title: " + title);
+            Console.WriteLine("Pages: " + pages);
+        }
+
+        #endregion
+
+
+        #region Q8 Params
+
+        public static void PrintAllTitles(params string[] titles)
+        {
+            foreach (string title in titles)
+            {
+                Console.WriteLine(title);
+            }
+        }
+
+        #endregion
+
+
+        #endregion
+    }
+}
