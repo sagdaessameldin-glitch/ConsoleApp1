@@ -1,0 +1,117 @@
+using System;
+using System.Text;
+
+namespace Consoleapp
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+#region Part 1: String Immutability & Interning
+
+        // Q1
+        string title = "clean code";
+            string upperTitle = title.ToUpper();
+
+            Console.WriteLine(title);
+            Console.WriteLine(upperTitle);
+
+            Console.WriteLine("==========================");
+
+            // Q2
+            string str01 = "Clean Code";
+            string str02 = "Clean Code";
+
+            Console.WriteLine(Object.ReferenceEquals(str01, str02));
+
+            Console.WriteLine("==========================");
+
+
+            #endregion
+
+
+            #region Part 2: StringBuilder
+
+            // Q3
+            StringBuilder builder = new StringBuilder();
+
+            builder.Append("Book List");
+            builder.Append(" - Updated");
+
+            Console.WriteLine(builder);
+
+            Console.WriteLine("==========================");
+
+            // Q4
+            builder.Replace("Book List", "Library");
+
+            Console.WriteLine(builder);
+
+            Console.WriteLine("==========================");
+
+
+            #endregion
+
+
+            #region Part 3: String Formatting
+
+            string bookTitle = "Clean Code";
+            int pages = 464;
+
+            // Q5 - Using + Operator
+            string concat = "Book: " + bookTitle + ", Pages: " + pages;
+
+            Console.WriteLine(concat);
+
+            // Q6 - Using String Interpolation
+            string interpolated = $"Book: {bookTitle}, Pages: {pages}";
+
+            Console.WriteLine(interpolated);
+
+            // Q7 - Using String.Format()
+            string composite = string.Format(
+                "Book: {0}, Pages: {1}",
+                bookTitle,
+                pages
+            );
+
+            Console.WriteLine(composite);
+
+            Console.WriteLine("==========================");
+
+
+            #endregion
+
+
+            #region Part 4: Nullable Types & Null Operators
+
+            // Q8
+            int? nullablePages = null;
+
+            Console.WriteLine(nullablePages ?? 0);
+
+            Console.WriteLine("==========================");
+
+            // Q9
+            string? author = null;
+
+            Console.WriteLine(author?.Length);
+
+            Console.WriteLine("==========================");
+
+
+            #endregion
+
+
+            #region Part 5: Arrays
+
+            // Q10
+            double[] prices = { 25.5, 40.0, 33.75 };
+
+            Console.WriteLine(prices[1]);
+
+            #endregion
+        }
+    }
+
+}
