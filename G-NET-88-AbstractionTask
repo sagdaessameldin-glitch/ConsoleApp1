@@ -1,0 +1,124 @@
+using System;
+
+#region Question 1 - Payment System
+
+abstract class Payment
+{
+    public double Amount { get; set; }
+
+    public Payment(double amount)
+    {
+        Amount = amount;
+    }
+
+    public abstract void Pay();
+
+    public void PrintReceipt()
+    {
+        Console.WriteLine("Receipt: " + Amount);
+    }
+}
+
+#endregion
+
+
+#region Question 2 - PaymentMethod
+
+abstract class PaymentMethod
+{
+    public decimal Amount { get; set; }
+
+    public PaymentMethod(decimal amount)
+    {
+        Amount = amount;
+    }
+
+    public void PrintReceipt()
+    {
+        Console.WriteLine("Payment Type: " + GetType().Name);
+        Console.WriteLine("Amount: " + Amount);
+    }
+
+    public abstract void Pay();
+}
+
+#endregion
+
+
+#region Question 2 - IRefundable
+
+interface IRefundable
+{
+    void Refund();
+}
+
+#endregion
+
+
+#region Question 3 - CashPayment
+
+class CashPayment : PaymentMethod
+{
+    public CashPayment(decimal amount) : base(amount)
+    {
+    }
+
+    public override void Pay()
+    {
+        Console.WriteLine("Paid by Cash: " + Amount);
+    }
+}
+
+#endregion
+
+
+#region Question 4 - CreditCardPayment
+
+class CreditCardPayment : PaymentMethod, IRefundable
+{
+    public CreditCardPayment(decimal amount) : base(amount)
+    {
+    }
+
+    public override void Pay()
+    {
+        Console.WriteLine("Paid by Credit Card: " + Amount);
+    }
+
+    public void Refund()
+    {
+        Console.WriteLine("Refunded to Credit Card: " + Amount);
+    }
+}
+
+#endregion
+
+
+#region Question 5 - Main
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        PaymentMethod[] payments =
+        {
+            new CreditCardPayment(1500),
+            new CashPayment(300)
+        };
+
+        foreach (PaymentMethod payment in payments)
+        {
+            payment.Pay();
+            payment.PrintReceipt();
+
+            if (payment is IRefundable refundable)
+            {
+                refundable.Refund();
+            }
+
+            Console.WriteLine("--------------------------------");
+        }
+    }
+}
+
+#endregion
