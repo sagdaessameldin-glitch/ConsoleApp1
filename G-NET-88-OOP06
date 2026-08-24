@@ -1,0 +1,611 @@
+#region Q1 - Object Copying
+
+// a) What happens when you assign one object variable to another object variable?
+// Answer:
+// Both variables will refer to the same object in memory.
+
+// b) Does assigning one object to another create a new object? Explain.
+// Answer:
+// No, it does not create a new object. It only copies the reference.
+
+// c) What is the difference between copying an object and copying its reference?
+// Answer:
+// Copying a reference means both variables point to the same object.
+// Copying an object means creating a separate object.
+
+#endregion
+
+
+#region Q2 - Shallow Copy vs Deep Copy
+
+// a) What is a Shallow Copy?
+// Answer:
+// A Shallow Copy creates a new object but reference-type members
+// still refer to the same objects.
+
+// b) What is a Deep Copy?
+// Answer:
+// A Deep Copy creates a new object and also creates new copies
+// of its reference-type members.
+
+// c) What happens to reference-type members when a Shallow Copy is created?
+// Answer:
+// They still refer to the same object as the original.
+
+// d) What happens to reference-type members when a Deep Copy is created?
+// Answer:
+// New separate objects are created for the reference-type members.
+
+// e) Give one situation where Deep Copy would be safer than Shallow Copy.
+// Answer:
+// When we want to change the copied object without affecting
+// the original object.
+
+#endregion
+
+
+#region Q3 - Static Members
+
+// a) What is a static field, and how is it different from an instance field?
+// Answer:
+// A static field belongs to the class and is shared between all objects.
+// An instance field belongs to each object separately.
+
+// b) What is a static method? Can a static method directly access instance members?
+// Answer:
+// A static method belongs to the class.
+// No, it cannot directly access instance members.
+
+// c) What is a static constructor, and when is it executed?
+// Answer:
+// A static constructor is used to initialize static members.
+// It runs automatically once before the class is used.
+
+// d) What is a static class? Can you create an object from a static class?
+// Answer:
+// A static class contains only static members.
+// No, we cannot create an object from a static class.
+
+#endregion
+
+
+#region Q4 - Extension Methods
+
+// a) What is an Extension Method?
+// Answer:
+// It is a method that allows us to add new functionality
+// to an existing class or type without changing its code.
+
+// b) What keyword must be used in the first parameter of an extension method?
+// Answer:
+// The "this" keyword.
+
+// c) Where must an extension method be declared?
+// Answer:
+// Inside a static class.
+
+// d) Can an extension method access private members of the class it extends?
+// Answer:
+// No, it cannot access private members directly.
+
+#endregion
+
+
+#region Q5 - Partial Classes and Partial Methods
+
+// a) What is a Partial Class?
+// Answer:
+// A partial class is a class that can be divided into multiple files.
+
+// b) Why would a developer split one class into multiple files?
+// Answer:
+// To organize the code and make it easier to read and maintain.
+
+// c) What is a Partial Method?
+// Answer:
+// A partial method is a method that can be declared in one part
+// of a partial class and implemented in another part.
+
+// d) What happens if a declared partial method has no implementation?
+// Answer:
+// If it is a partial void method, the compiler removes it
+// if there is no implementation.
+
+#endregion
+
+
+#region DeliveryAddress
+
+public class DeliveryAddress
+{
+    public string City { get; set; }
+    public string Street { get; set; }
+    public int BuildingNumber { get; set; }
+
+    public DeliveryAddress(string city, string street, int buildingNumber)
+    {
+        City = city;
+        Street = street;
+        BuildingNumber = buildingNumber;
+    }
+
+    public string GetFullAddress()
+    {
+        return $"{City}, {Street}, {BuildingNumber}";
+    }
+}
+
+#endregion
+
+
+#region Shipment
+
+public partial class Shipment
+{
+    private string trackingCode;
+    private string description;
+    private double weight;
+    private decimal deliveryFee;
+
+    public static int TotalShipmentsCreated;
+
+    public DeliveryAddress Destination { get; set; }
+
+    public string TrackingCode
+    {
+        get { return trackingCode; }
+    }
+
+    public string Description
+    {
+        get { return description; }
+        set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                description = value;
+        }
+    }
+
+    public double Weight
+    {
+        get { return weight; }
+        set
+        {
+            if (value > 0)
+                weight = value;
+        }
+    }
+
+    public decimal DeliveryFee
+    {
+        get { return deliveryFee; }
+        private set
+        {
+            if (value > 0)
+                deliveryFee = value;
+        }
+    }
+
+    public string ShipmentType { get; set; }
+
+    public decimal EstimatedCost
+    {
+        get { return DeliveryFee + (decimal)(Weight * 5); }
+    }
+
+    static Shipment()
+    {
+        TotalShipmentsCreated = 0;
+        Console.WriteLine("Shipment System Initialized");
+    }
+
+    public Shipment(string trackingCode)
+    {
+        this.trackingCode = trackingCode;
+        description = "Unknown";
+        weight = 1;
+        deliveryFee = 50;
+        ShipmentType = "Standard";
+        Destination = new DeliveryAddress("Unknown", "Unknown", 0);
+
+        TotalShipmentsCreated++;
+    }
+
+    public Shipment(string trackingCode, string description,
+        double weight, decimal deliveryFee,
+        DeliveryAddress destination, string shipmentType)
+    {
+        this.trackingCode = trackingCode;
+        this.description = description;
+        this.weight = weight;
+        this.deliveryFee = deliveryFee;
+        Destination = destination;
+        ShipmentType = shipmentType;
+
+        TotalShipmentsCreated++;
+    }
+
+    public void UpdateDeliveryFee(decimal newFee)
+    {
+        if (newFee > 0)
+            DeliveryFee = newFee;
+    }
+
+    public void PrintShipment()
+    {
+        Console.WriteLine($"Tracking Code: {TrackingCode}");
+        Console.WriteLine($"Description: {Description}");
+        Console.WriteLine($"Weight: {Weight} KG");
+        Console.WriteLine($"Delivery Fee: {DeliveryFee} EGP");
+        Console.WriteLine($"Shipment Type: {ShipmentType}");
+        Console.WriteLine($"Destination: {Destination.GetFullAddress()}");
+        Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
+        Console.WriteLine($"Tracking Status: {GetTrackingStatus()}");
+    }
+
+    public Shipment CopyShipment()
+    {
+        return (Shipment)this.MemberwiseClone();
+    }
+
+    public Shipment ShallowCopy()
+    {
+        return (Shipment)this.MemberwiseClone();
+    }
+
+    public Shipment DeepCopy()
+    {
+        Shipment copy = (Shipment)this.MemberwiseClone();
+
+        copy.Destination = new DeliveryAddress(
+            Destination.City,
+            Destination.Street,
+            Destination.BuildingNumber
+        );
+
+        return copy;
+    }
+
+    public static int GetTotalShipmentsCreated()
+    {
+        return TotalShipmentsCreated;
+    }
+}
+
+#endregion
+
+#region Shipment Tracking
+
+public partial class Shipment
+{
+    private string trackingStatus = "In Transit";
+
+    public string TrackingStatus
+    {
+        get { return trackingStatus; }
+    }
+
+    public string GetTrackingStatus()
+    {
+        return trackingStatus;
+    }
+
+    public void UpdateTrackingStatus(string newStatus)
+    {
+        if (!string.IsNullOrWhiteSpace(newStatus))
+        {
+            trackingStatus = newStatus;
+            OnTrackingStatusChanged(newStatus);
+        }
+    }
+
+    partial void OnTrackingStatusChanged(string newStatus);
+}
+
+#endregion
+
+
+#region Partial Method
+
+public partial class Shipment
+{
+    partial void OnTrackingStatusChanged(string newStatus)
+    {
+        Console.WriteLine($"Tracking status changed to: {newStatus}");
+    }
+}
+
+#endregion
+
+
+#region Delivery Utilities
+
+public static class DeliveryUtilities
+{
+    public static void PrintSeparator()
+    {
+        Console.WriteLine("==========================================");
+    }
+
+    public static void PrintSystemTitle()
+    {
+        PrintSeparator();
+        Console.WriteLine("Smart Delivery Management System");
+        PrintSeparator();
+    }
+}
+
+#endregion
+
+
+#region Extension Methods
+
+public static class ShipmentExtensions
+{
+    public static string GetSummary(this Shipment shipment)
+    {
+        return $"{shipment.TrackingCode} | {shipment.ShipmentType} | {shipment.Weight} KG | {shipment.GetTrackingStatus()}";
+    }
+
+    public static bool IsDelivered(this Shipment shipment)
+    {
+        return shipment.GetTrackingStatus() == "Delivered";
+    }
+}
+
+#endregion
+
+
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        #region System Title
+
+        DeliveryUtilities.PrintSystemTitle();
+
+        #endregion
+
+
+        #region Creating Shipments
+
+        Console.WriteLine();
+        Console.WriteLine("Creating Shipments...");
+        Console.WriteLine();
+
+        Shipment shipment1 = new Shipment(
+            "SH001",
+            "Standard Shipment",
+            3,
+            50,
+            new DeliveryAddress("Cairo", "Nasr City", 10),
+            "Standard"
+        );
+
+        Shipment shipment2 = new Shipment(
+            "SH002",
+            "Express Shipment",
+            2,
+            80,
+            new DeliveryAddress("Cairo", "Heliopolis", 20),
+            "Express"
+        );
+
+        Shipment shipment3 = new Shipment(
+            "SH003",
+            "International Shipment",
+            8,
+            150,
+            new DeliveryAddress("Alexandria", "Smouha", 30),
+            "International"
+        );
+
+        shipment1.UpdateTrackingStatus("In Transit");
+        shipment2.UpdateTrackingStatus("Out For Delivery");
+        shipment3.UpdateTrackingStatus("Delivered");
+
+        Console.WriteLine("Standard Shipment Created");
+        Console.WriteLine("Express Shipment Created");
+        Console.WriteLine("International Shipment Created");
+
+        Console.WriteLine();
+        Console.WriteLine(
+            $"Total Shipments Created : {Shipment.GetTotalShipmentsCreated()}"
+        );
+
+        #endregion
+
+
+        #region Object Copying
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Object Copying");
+        DeliveryUtilities.PrintSeparator();
+
+        Shipment shipment4 = shipment1;
+
+        Console.WriteLine($"Original Shipment  : {shipment1.TrackingCode}");
+        Console.WriteLine($"Assigned Shipment  : {shipment4.TrackingCode}");
+        Console.WriteLine();
+        Console.WriteLine(
+            $"Same Object : {ReferenceEquals(shipment1, shipment4)}"
+        );
+
+        Shipment copiedShipment = shipment1.CopyShipment();
+
+        Console.WriteLine();
+        Console.WriteLine(
+            $"Same Object After Copy : {ReferenceEquals(shipment1, copiedShipment)}"
+        );
+
+        #endregion
+
+
+        #region Shallow Copy
+
+        Console.WriteLine();
+        Console.WriteLine("------------------------------------------");
+        Console.WriteLine("Shallow Copy");
+        Console.WriteLine("------------------------------------------");
+
+        Shipment shallow = shipment1.ShallowCopy();
+
+        Console.WriteLine(
+            $"Original Shipment Address : {shipment1.Destination.City}"
+        );
+
+        Console.WriteLine(
+            $"Copied Shipment Address   : {shallow.Destination.City}"
+        );
+
+        Console.WriteLine();
+        Console.WriteLine("Changing copied shipment address...");
+
+        shallow.Destination.City = "Giza";
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"Original Shipment Address : {shipment1.Destination.City}"
+        );
+
+        Console.WriteLine(
+            $"Copied Shipment Address   : {shallow.Destination.City}"
+        );
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"Same DeliveryAddress Object : " +
+            $"{ReferenceEquals(shipment1.Destination, shallow.Destination)}"
+        );
+
+        #endregion
+
+
+        #region Deep Copy
+
+        Console.WriteLine();
+        Console.WriteLine("------------------------------------------");
+        Console.WriteLine("Deep Copy");
+        Console.WriteLine("------------------------------------------");
+
+        shipment1.Destination.City = "Cairo";
+
+        Shipment deep = shipment1.DeepCopy();
+
+        Console.WriteLine(
+            $"Original Shipment Address : {shipment1.Destination.City}"
+        );
+
+        Console.WriteLine(
+            $"Copied Shipment Address   : {deep.Destination.City}"
+        );
+
+        Console.WriteLine();
+        Console.WriteLine("Changing copied shipment address...");
+
+        deep.Destination.City = "Giza";
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"Original Shipment Address : {shipment1.Destination.City}"
+        );
+
+        Console.WriteLine(
+            $"Copied Shipment Address   : {deep.Destination.City}"
+        );
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"Same DeliveryAddress Object : " +
+            $"{ReferenceEquals(shipment1.Destination, deep.Destination)}"
+        );
+
+        #endregion
+
+
+        #region Extension Methods
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Extension Methods");
+        DeliveryUtilities.PrintSeparator();
+
+        Console.WriteLine(shipment1.GetSummary());
+        Console.WriteLine(shipment2.GetSummary());
+        Console.WriteLine(shipment3.GetSummary());
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"SH001 Is Delivered : {shipment1.IsDelivered()}"
+        );
+
+        Console.WriteLine(
+            $"SH003 Is Delivered : {shipment3.IsDelivered()}"
+        );
+
+        #endregion
+
+
+        #region Tracking Status
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Tracking Status");
+        DeliveryUtilities.PrintSeparator();
+
+        shipment2.UpdateTrackingStatus("Out For Delivery");
+
+        #endregion
+
+
+        #region Static Utilities
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Static Utilities");
+        DeliveryUtilities.PrintSeparator();
+
+        Console.WriteLine();
+        Console.WriteLine("------------------------------------------");
+        Console.WriteLine("Delivery Center");
+        Console.WriteLine("------------------------------------------");
+
+        Console.WriteLine();
+        Console.WriteLine(
+            $"Total Shipments Created : {Shipment.GetTotalShipmentsCreated()}"
+        );
+
+        #endregion
+
+
+        #region Partial Method
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Partial Method");
+        DeliveryUtilities.PrintSeparator();
+
+        shipment3.UpdateTrackingStatus("Delivered");
+
+        #endregion
+
+
+        #region Assignment Completed
+
+        Console.WriteLine();
+        DeliveryUtilities.PrintSeparator();
+        Console.WriteLine("Assignment Completed");
+        DeliveryUtilities.PrintSeparator();
+
+        #endregion
+    }
+}
+
