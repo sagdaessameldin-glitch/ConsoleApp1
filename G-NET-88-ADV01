@@ -1,0 +1,175 @@
+#region Q1 - What is a generic class? Why use generics?
+
+// A generic class is a class that can work with different data types.
+// We use generics to reuse the same code with different data types
+// and provide type safety.
+
+#endregion
+
+
+#region Q2 - Write a generic class Container<T> with Add and Get methods.
+
+class Container<T>
+{
+    private T item;
+
+    public void Add(T value)
+    {
+        item = value;
+    }
+
+    public T Get()
+    {
+        return item;
+    }
+}
+
+#endregion
+
+
+#region Q3 - What are multiple type parameters? Write Pair<TKey, TValue>.
+
+// Multiple type parameters allow a generic class or method
+// to work with more than one data type.
+
+class Pair<TKey, TValue>
+{
+    public TKey Key { get; set; }
+    public TValue Value { get; set; }
+
+    public Pair(TKey key, TValue value)
+    {
+        Key = key;
+        Value = value;
+    }
+}
+
+#endregion
+
+
+#region Q4 - What is a generic method? Write Swap<T> method.
+
+// A generic method is a method that can work with different data types.
+
+static void Swap<T>(ref T first, ref T second)
+{
+    T temp = first;
+    first = second;
+    second = temp;
+}
+
+#endregion
+
+
+#region Q5 - Write a generic method FindMax<T> that finds maximum value.
+
+// FindMax uses IComparable<T> to compare the values.
+
+static T FindMax<T>(T first, T second) where T : IComparable<T>
+{
+    return first.CompareTo(second) > 0 ? first : second;
+}
+
+#endregion
+
+
+#region Q6 - What is a generic interface? Write IRepository<T>.
+
+// A generic interface is an interface that can work with different data types.
+
+interface IRepository<T>
+{
+    void Add(T item);
+    T Get(int id);
+    void Delete(int id);
+}
+
+#endregion
+
+
+#region Q7 - What is the 'struct' constraint? Write an example.
+
+// The struct constraint means that T must be a value type.
+
+static void PrintValue<T>(T value) where T : struct
+{
+    Console.WriteLine(value);
+}
+
+#endregion
+
+
+#region Q8 - What is the 'class' constraint? Write an example.
+
+// The class constraint means that T must be a reference type.
+
+static void PrintObject<T>(T value) where T : class
+{
+    Console.WriteLine(value);
+}
+
+#endregion
+
+
+#region Q9 - What is the 'new()' constraint? Write an example.
+
+// The new() constraint means that T must have a public parameterless constructor.
+
+static T CreateObject<T>() where T : new()
+{
+    return new T();
+}
+
+#endregion
+
+
+#region Q10 - What is the interface constraint? Write an example.
+
+// The interface constraint means that T must implement
+// the specified interface.
+
+interface IPrintable
+{
+    void Print();
+}
+
+static void PrintItem<T>(T item) where T : IPrintable
+{
+    item.Print();
+}
+
+#endregion
+
+
+#region Q11 - What is the base class constraint? Write an example.
+
+// The base class constraint means that T must inherit
+// from the specified base class.
+
+class Animal
+{
+    public void Eat()
+    {
+        Console.WriteLine("Eating");
+    }
+}
+
+static void MakeAnimalEat<T>(T animal) where T : Animal
+{
+    animal.Eat();
+}
+
+#endregion
+
+
+#region Q12 - How do you apply multiple constraints? Write an example.
+
+// We can apply more than one constraint to the same type parameter.
+
+static T CreateAnimal<T>() 
+    where T : Animal, IPrintable, new()
+{
+    return new T();
+}
+
+#endregion
