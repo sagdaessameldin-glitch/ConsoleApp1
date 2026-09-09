@@ -1,0 +1,272 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        #region Exercise 1: Student Grade Manager
+
+        List<int> grades = new List<int>
+        {
+            85, 92, 78, 95, 88, 70, 100, 65
+        };
+
+        Console.WriteLine("Grades:");
+
+        foreach (int grade in grades)
+        {
+            Console.Write(grade + " ");
+        }
+
+        Console.WriteLine($"\nCount: {grades.Count}");
+
+        Console.WriteLine($"First Grade: {grades[0]}");
+
+        Console.WriteLine($"Last Grade: {grades[grades.Count - 1]}");
+
+        grades.Sort();
+
+        Console.WriteLine("\nSorted Grades:");
+
+        foreach (int grade in grades)
+        {
+            Console.Write(grade + " ");
+        }
+
+        int firstAbove90 = grades.Find(grade => grade > 90);
+
+        Console.WriteLine($"\nFirst Grade Above 90: {firstAbove90}");
+
+        List<int> failingGrades = grades.FindAll(grade => grade < 75);
+
+        Console.WriteLine("Failing Grades:");
+
+        foreach (int grade in failingGrades)
+        {
+            Console.Write(grade + " ");
+        }
+
+        grades.RemoveAll(grade => grade < 75);
+
+        Console.WriteLine("\nGrades After Removing Failing Grades:");
+
+        foreach (int grade in grades)
+        {
+            Console.Write(grade + " ");
+        }
+
+        bool has100 = grades.Contains(100);
+
+        Console.WriteLine($"\nAny Grade Equals 100? {has100}");
+
+        List<string> gradeStrings = new List<string>();
+
+        foreach (int grade in grades)
+        {
+            gradeStrings.Add($"Grade: {grade}");
+        }
+
+        Console.WriteLine("\nGrade Strings:");
+
+        foreach (string grade in gradeStrings)
+        {
+            Console.WriteLine(grade);
+        }
+
+        #endregion
+
+
+        #region Exercise 2: Leaderboard
+
+        SortedDictionary<int, string> leaderboard =
+            new SortedDictionary<int, string>();
+
+        leaderboard.Add(500, "Ahmed");
+        leaderboard.Add(200, "Sara");
+        leaderboard.Add(800, "Ali");
+        leaderboard.Add(350, "Mona");
+
+        Console.WriteLine("\nLeaderboard:");
+
+        foreach (var player in leaderboard)
+        {
+            Console.WriteLine($"Score: {player.Key}, Player: {player.Value}");
+        }
+
+        int firstKey = leaderboard.Keys.First();
+
+        string firstValue = leaderboard.Values.First();
+
+        Console.WriteLine($"\nFirst Key: {firstKey}");
+        Console.WriteLine($"First Value: {firstValue}");
+
+        bool score500Exists = leaderboard.ContainsKey(500);
+
+        Console.WriteLine($"\nDoes Score 500 Exist? {score500Exists}");
+
+        if (leaderboard.TryGetValue(999, out string player999))
+        {
+            Console.WriteLine($"Player with score 999: {player999}");
+        }
+        else
+        {
+            Console.WriteLine("Player with score 999: Not Found");
+        }
+
+        leaderboard.Remove(200);
+
+        Console.WriteLine("\nLeaderboard After Removing Score 200:");
+
+        foreach (var player in leaderboard)
+        {
+            Console.WriteLine($"Score: {player.Key}, Player: {player.Value}");
+        }
+
+        #endregion
+
+
+        #region Exercise 3: Phone Book
+
+        Dictionary<string, string> phoneBook =
+            new Dictionary<string, string>();
+
+        phoneBook.Add("Ahmed", "01011111111");
+        phoneBook.Add("Sara", "01022222222");
+        phoneBook.Add("Mona", "01033333333");
+        phoneBook.Add("Ali", "01044444444");
+
+        phoneBook["Omar"] = "01055555555";
+
+        try
+        {
+            phoneBook.Add("Ahmed", "01111111111");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine("\nAdd Duplicate Error:");
+            Console.WriteLine(ex.Message);
+        }
+
+        bool added = phoneBook.TryAdd("Ahmed", "01111111111");
+
+        Console.WriteLine($"\nTryAdd Duplicate Succeeded? {added}");
+
+        string searchName = "Youssef";
+
+        if (phoneBook.ContainsKey(searchName))
+        {
+            Console.WriteLine($"Phone: {phoneBook[searchName]}");
+        }
+        else
+        {
+            Console.WriteLine($"{searchName}: Not Found");
+        }
+
+        string phone;
+
+        if (phoneBook.ContainsKey("Youssef"))
+        {
+            phone = phoneBook["Youssef"];
+        }
+        else
+        {
+            phone = "Not Found";
+        }
+
+        Console.WriteLine($"\nYoussef Phone: {phone}");
+
+        Console.WriteLine("\nKeys:");
+
+        foreach (string key in phoneBook.Keys)
+        {
+            Console.Write(key + " ");
+        }
+
+        Console.WriteLine("\n\nValues:");
+
+        foreach (string value in phoneBook.Values)
+        {
+            Console.Write(value + " ");
+        }
+
+        #endregion
+
+
+        #region Exercise 4: Unique Email Validator
+
+        HashSet<string> emails =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        emails.Add("ahmed@test.com");
+        emails.Add("AHMED@test.com");
+        emails.Add("sara@test.com");
+        emails.Add("Sara@Test.Com");
+
+        Console.WriteLine("\n\nEmail Count:");
+
+        Console.WriteLine(emails.Count);
+
+        Console.WriteLine("\nStored Emails:");
+
+        foreach (string email in emails)
+        {
+            Console.WriteLine(email);
+        }
+
+        HashSet<int> setA = new HashSet<int>
+        {
+            1, 2, 3, 4, 5
+        };
+
+        HashSet<int> setB = new HashSet<int>
+        {
+            4, 5, 6, 7, 8
+        };
+
+        HashSet<int> unionSet = new HashSet<int>(setA);
+
+        unionSet.UnionWith(setB);
+
+        Console.WriteLine("\nUnionWith:");
+
+        foreach (int number in unionSet)
+        {
+            Console.Write(number + " ");
+        }
+
+        HashSet<int> intersectSet = new HashSet<int>(setA);
+
+        intersectSet.IntersectWith(setB);
+
+        Console.WriteLine("\n\nIntersectWith:");
+
+        foreach (int number in intersectSet)
+        {
+            Console.Write(number + " ");
+        }
+
+        HashSet<int> exceptSet = new HashSet<int>(setA);
+
+        exceptSet.ExceptWith(setB);
+
+        Console.WriteLine("\n\nExceptWith:");
+
+        foreach (int number in exceptSet)
+        {
+            Console.Write(number + " ");
+        }
+
+        HashSet<int> subset = new HashSet<int>
+        {
+            1, 2
+        };
+
+        bool isSubset = subset.IsSubsetOf(setA);
+
+        Console.WriteLine($"\n\n{{1, 2}} Is Subset Of Set A? {isSubset}");
+
+        #endregion
+    }
+}
