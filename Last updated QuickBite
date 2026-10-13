@@ -1,0 +1,538 @@
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
+namespace QuickBite
+{
+
+    public enum DeliveryType
+    {
+        Standard,
+        Express,
+        StorePickup
+    }
+
+    public enum PaymentType
+    {
+        Card,
+        PayPal
+    }
+
+    public enum NotificationType
+    {
+        Email,
+        Sms
+    }
+
+    public class Order
+    {
+        public int Id { get; set; }
+        public string CustomerName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string DeliveryAddress { get; set; } = "";
+        public decimal Total { get; set; }
+        public DeliveryType DeliveryType { get; set; }
+        public PaymentType PaymentType { get; set; }
+        public NotificationType NotificationType { get; set; }
+    }
+
+
+    public interface IOrderRepository
+    {
+        void Save(Order order);
+    }
+
+    public interface IOrderRemover
+    {
+        void Delete(Order order);
+    }
+
+    public interface IPaymentMethod
+    {
+        bool Pay(Order order);
+    }
+
+    public interface INotificationChannel
+    {
+        void Send(Order order);
+    }
+
+    public interface IDeliveryStrategy
+    {
+        decimal CalculateFee();
+        bool RequiresAddress { get; }
+    }
+
+    public interface IReceiptGenerator
+    {
+        void Generate(Order order);
+    }
+
+    public interface IOrderReporter
+    {
+        void PrintDailyReport(IEnumerable<Order> orders);
+    }
+
+    public interface IOrderLogger
+    {
+        void Log(string message);
+    }
+
+    public interface IPaymentMethodProvider
+    {
+        IPaymentMethod GetPaymentMethod(PaymentType paymentType);
+    }
+
+    public interface INotificationChannelProvider
+    {
+        INotificationChannel GetChannel(NotificationType notificationType);
+    }
+
+    public interface IDeliveryStrategyProvider
+    {
+        IDeliveryStrategy GetStrategy(DeliveryType deliveryType);
+    }
+
+
+    public class DatabaseOrderRepository : IOrderRepository, IOrderRemover
+    {
+        public void Save(Order order)
+        {
+            Console.WriteLine($"Saving order {order.Id} to SQL database...");
+        }
+
+        public void Delete(Order order)
+        {
+            Console.WriteLine($"Deleting order {order.Id} from SQL database...");
+        }
+    }
+
+
+    public class CardPayment : IPaymentMethod
+    {
+        public bool Pay(Order order)
+        {
+            Console.WriteLine($"Charging £{order.Total:0.00} using CARD...");
+            return true;
+        }
+    }
+
+    public class PayPalPayment : IPaymentMethod
+    {
+        public bool Pay(Order order)
+        {
+            Console.WriteLine($"Charging £{order.Total:0.00} using PAYPAL...");
+            return true;
+        }
+    }
+
+    public class PaymentMethodProvider : IPaymentMethodProvider
+    {
+        private readonly Dictionary<PaymentType, IPaymentMethod> _methods;
+
+        public PaymentMethodProvider(
+            Dictionary<PaymentType, IPaymentMethod> methods)
+        {
+            _methods = methods;
+        }
+
+        public IPaymentMethod GetPaymentMethod(PaymentType paymentType)
+        {
+            if (_methods.TryGetValue(paymentType, out IPaymentMethod method))
+                return method;
+
+            throw new InvalidOperationException(
+                $"Payment method '{paymentType}' is not registered.");
+        }
+    }
+
+
+    public class EmailNotification : INotificationChannel
+    {
+        public void Send(Order order)
+        {
+            Console.WriteLine(
+                $"Email sent to {order.Email}: Your order is confirmed.");
+        }
+    }
+
+    public class SmsNotification : INotificationChannel
+    {
+        public void Send(Order order)
+        {
+            Console.WriteLine(
+                $"SMS sent to {order.Phone}: Your order is confirmed.");
+        }
+    }
+
+    public class NotificationChannelProvider : INotificationChannelProvider
+    {
+        private readonly Dictionary<NotificationType, INotificationChannel>
+            _channels;
+
+        public NotificationChannelProvider(
+            Dictionary<NotificationType, INotificationChannel> channels)
+        {
+            _channels = channels;
+        }
+
+        public INotificationChannel GetChannel(
+            NotificationType notificationType)
+        {
+            if (_channels.TryGetValue(
+                notificationType, out INotificationChannel channel))
+            {
+                return channel;
+            }
+
+            throw new InvalidOperationException(
+                $"Notification channel '{notificationType}' is not registered.");
+        }
+    }
+
+
+    public class StandardDelivery : IDeliveryStrategy
+    {
+        public decimal CalculateFee() => 3.99m;
+        public bool RequiresAddress => true;
+    }
+
+    public class ExpressDelivery : IDeliveryStrategy
+    {
+        public decimal CalculateFee() => 7.99m;
+        public bool RequiresAddress => true;
+    }
+
+    public class StorePickupDelivery : IDeliveryStrategy
+    {
+        public decimal CalculateFee() => 0m;
+        public bool RequiresAddress => false;
+    }
+
+    public class DeliveryStrategyProvider : IDeliveryStrategyProvider
+    {
+        private readonly Dictionary<DeliveryType, IDeliveryStrategy>
+            _strategies;
+
+        public DeliveryStrategyProvider(
+            Dictionary<DeliveryType, IDeliveryStrategy> strategies)
+        {
+            _strategies = strategies;
+        }
+
+        public IDeliveryStrategy GetStrategy(DeliveryType deliveryType)
+        {
+            if (_strategies.TryGetValue(
+                deliveryType, out IDeliveryStrategy strategy))
+            {
+                return strategy;
+            }
+
+            throw new InvalidOperationException(
+                $"Delivery type '{deliveryType}' is not registered.");
+        }
+    }
+
+
+    public class ConsoleReceiptGenerator : IReceiptGenerator
+    {
+        public void Generate(Order order)
+        {
+            Console.WriteLine("\n-----------------------");
+            Console.WriteLine("QUICKBITE RECEIPT");
+            Console.WriteLine($"Order: {order.Id}");
+            Console.WriteLine($"Customer: {order.CustomerName}");
+            Console.WriteLine($"Total: £{order.Total:0.00}");
+            Console.WriteLine("-----------------------");
+        }
+    }
+
+    public class ConsoleOrderReporter : IOrderReporter
+    {
+        public void PrintDailyReport(IEnumerable<Order> orders)
+        {
+            Console.WriteLine("\n=== DAILY ORDER REPORT ===");
+
+            foreach (Order order in orders)
+            {
+                Console.WriteLine(
+                    $"{order.Id} | {order.CustomerName} | £{order.Total:0.00}");
+            }
+        }
+    }
+
+    public class ConsoleOrderLogger : IOrderLogger
+    {
+        public void Log(string message)
+        {
+            Console.WriteLine($"LOG: {message}");
+        }
+    }
+
+
+    public class OrderService
+    {
+        private readonly IOrderRepository _repository;
+        private readonly IPaymentMethodProvider _paymentProvider;
+        private readonly INotificationChannelProvider _notificationProvider;
+        private readonly IDeliveryStrategyProvider _deliveryProvider;
+        private readonly IReceiptGenerator _receiptGenerator;
+        private readonly IOrderLogger _logger;
+
+        public OrderService(
+            IOrderRepository repository,
+            IPaymentMethodProvider paymentProvider,
+            INotificationChannelProvider notificationProvider,
+            IDeliveryStrategyProvider deliveryProvider,
+            IReceiptGenerator receiptGenerator,
+            IOrderLogger logger)
+        {
+            _repository = repository;
+            _paymentProvider = paymentProvider;
+            _notificationProvider = notificationProvider;
+            _deliveryProvider = deliveryProvider;
+            _receiptGenerator = receiptGenerator;
+            _logger = logger;
+        }
+
+        public void PlaceOrder(Order order)
+        {
+            if (string.IsNullOrWhiteSpace(order.CustomerName))
+                throw new InvalidOperationException(
+                    "Customer name is required.");
+
+            IDeliveryStrategy delivery =
+                _deliveryProvider.GetStrategy(order.DeliveryType);
+
+            if (delivery.RequiresAddress &&
+                string.IsNullOrWhiteSpace(order.DeliveryAddress))
+            {
+                throw new InvalidOperationException(
+                    "Delivery address is required.");
+            }
+
+            order.Total += delivery.CalculateFee();
+
+            IPaymentMethod payment =
+                _paymentProvider.GetPaymentMethod(order.PaymentType);
+
+            bool paid = payment.Pay(order);
+
+            if (!paid)
+                throw new InvalidOperationException("Payment failed.");
+
+            _repository.Save(order);
+
+            _notificationProvider
+                .GetChannel(order.NotificationType)
+                .Send(order);
+
+            _receiptGenerator.Generate(order);
+
+            _logger.Log(
+                $"Order {order.Id} completed at {DateTime.Now}");
+        }
+    }
+
+
+    public class Program
+    {
+        public static void Main()
+        {
+
+            var repository = new DatabaseOrderRepository();
+
+            var paymentProvider = new PaymentMethodProvider(
+                new Dictionary<PaymentType, IPaymentMethod>
+                {
+                    { PaymentType.Card, new CardPayment() },
+                    { PaymentType.PayPal, new PayPalPayment() }
+                });
+
+            var notificationProvider = new NotificationChannelProvider(
+                new Dictionary<NotificationType, INotificationChannel>
+                {
+                    { NotificationType.Email, new EmailNotification() },
+                    { NotificationType.Sms, new SmsNotification() }
+                });
+
+            var deliveryProvider = new DeliveryStrategyProvider(
+                new Dictionary<DeliveryType, IDeliveryStrategy>
+                {
+                    { DeliveryType.Standard, new StandardDelivery() },
+                    { DeliveryType.Express, new ExpressDelivery() },
+                    { DeliveryType.StorePickup, new StorePickupDelivery() }
+                });
+
+            IReceiptGenerator receiptGenerator =
+                new ConsoleReceiptGenerator();
+
+            IOrderLogger logger = new ConsoleOrderLogger();
+
+            IOrderReporter reporter = new ConsoleOrderReporter();
+
+            var service = new OrderService(
+                repository,
+                paymentProvider,
+                notificationProvider,
+                deliveryProvider,
+                receiptGenerator,
+                logger);
+
+
+            Console.WriteLine("===== QUICKBITE ORDER SYSTEM =====\n");
+
+            int id = ReadInt("Enter Order ID: ");
+
+            Console.Write("Enter Customer Name: ");
+            string name = Console.ReadLine() ?? "";
+
+            Console.Write("Enter Email: ");
+            string email = Console.ReadLine() ?? "";
+
+            Console.Write("Enter Phone: ");
+            string phone = Console.ReadLine() ?? "";
+
+            Console.Write("Enter Delivery Address: ");
+            string address = Console.ReadLine() ?? "";
+
+            decimal total = ReadDecimal("Enter Order Price: ");
+
+
+            Console.WriteLine("\nChoose Delivery Type:");
+            Console.WriteLine("1. Standard");
+            Console.WriteLine("2. Express");
+            Console.WriteLine("3. Store Pickup");
+
+            int deliveryChoice = ReadChoice("Enter choice: ", 1, 3);
+
+            DeliveryType deliveryType;
+
+            switch (deliveryChoice)
+            {
+                case 1:
+                    deliveryType = DeliveryType.Standard;
+                    break;
+
+                case 2:
+                    deliveryType = DeliveryType.Express;
+                    break;
+
+                default:
+                    deliveryType = DeliveryType.StorePickup;
+                    break;
+            }
+
+
+            Console.WriteLine("\nChoose Payment Method:");
+            Console.WriteLine("1. Card");
+            Console.WriteLine("2. PayPal");
+
+            int paymentChoice = ReadChoice("Enter choice: ", 1, 2);
+
+            PaymentType paymentType =
+                paymentChoice == 1
+                    ? PaymentType.Card
+                    : PaymentType.PayPal;
+
+
+            Console.WriteLine("\nChoose Notification Method:");
+            Console.WriteLine("1. Email");
+            Console.WriteLine("2. SMS");
+
+            int notificationChoice =
+                ReadChoice("Enter choice: ", 1, 2);
+
+            NotificationType notificationType =
+                notificationChoice == 1
+                    ? NotificationType.Email
+                    : NotificationType.Sms;
+
+
+            var order = new Order
+            {
+                Id = id,
+                CustomerName = name,
+                Email = email,
+                Phone = phone,
+                DeliveryAddress = address,
+                Total = total,
+                DeliveryType = deliveryType,
+                PaymentType = paymentType,
+                NotificationType = notificationType
+            };
+
+
+            try
+            {
+                service.PlaceOrder(order);
+
+                Console.WriteLine("\nOrder placed successfully!");
+
+                reporter.PrintDailyReport(new List<Order> { order });
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"\nError: {ex.Message}");
+            }
+        }
+
+
+        public static int ReadInt(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+
+                if (int.TryParse(Console.ReadLine(), out int value))
+                    return value;
+
+                Console.WriteLine("Please enter a valid whole number.");
+            }
+        }
+
+
+        public static decimal ReadDecimal(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+
+                string input = Console.ReadLine() ?? "";
+
+                if (decimal.TryParse(
+                    input,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
+                    out decimal value) && value >= 0)
+                {
+                    return value;
+                }
+
+                Console.WriteLine(
+                    "Enter a valid non-negative price, e.g. 25.50.");
+            }
+        }
+
+
+        public static int ReadChoice(
+            string message, int min, int max)
+        {
+            while (true)
+            {
+                Console.Write(message);
+
+                if (int.TryParse(Console.ReadLine(), out int choice)
+                    && choice >= min && choice <= max)
+                {
+                    return choice;
+                }
+
+                Console.WriteLine(
+                    $"Please choose a number between {min} and {max}.");
+            }
+        }
+    }
+}
