@@ -1,0 +1,236 @@
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+#region Question 1
+// Get all products from the "Seafood" category.
+// Print each product's name and price.
+
+var q1 = ProductList
+    .Where(p => p.Category == "Seafood")
+    .Select(p => new { p.ProductName, p.UnitPrice });
+
+foreach (var p in q1)
+{
+    Console.WriteLine($"{p.ProductName} - {p.UnitPrice}");
+}
+#endregion
+
+
+#region Question 2
+// Get a list of only the product names from ProductList.
+// Print each name.
+
+var q2 = ProductList
+    .Select(p => p.ProductName);
+
+foreach (var name in q2)
+{
+    Console.WriteLine(name);
+}
+#endregion
+
+
+#region Question 3
+// Sort all products by UnitPrice (ascending).
+// Print each product's name and price.
+
+var q3 = ProductList
+    .OrderBy(p => p.UnitPrice)
+    .Select(p => new { p.ProductName, p.UnitPrice });
+
+foreach (var p in q3)
+{
+    Console.WriteLine($"{p.ProductName} - {p.UnitPrice}");
+}
+#endregion
+
+
+#region Question 4
+// Get all products where UnitPrice is between 10 and 30.
+
+var q4 = ProductList
+    .Where(p => p.UnitPrice >= 10 && p.UnitPrice <= 30);
+
+foreach (var p in q4)
+{
+    Console.WriteLine($"{p.ProductName} - {p.UnitPrice}");
+}
+#endregion
+
+
+#region Question 5
+// Get all products that are in stock (UnitsInStock > 0)
+// and belong to the "Condiments" category.
+
+var q5 = ProductList
+    .Where(p => p.UnitsInStock > 0
+             && p.Category == "Condiments");
+
+foreach (var p in q5)
+{
+    Console.WriteLine(p.ProductName);
+}
+#endregion
+
+
+#region Question 6
+// Create an anonymous type with Name, Price, and StockStatus.
+// Print the result.
+
+var q6 = ProductList
+    .Select(p => new
+    {
+        Name = p.ProductName,
+        Price = p.UnitPrice,
+        StockStatus = p.UnitsInStock > 0
+            ? "Available"
+            : "Out of Stock"
+    });
+
+foreach (var p in q6)
+{
+    Console.WriteLine(
+        $"{p.Name} - {p.Price} - {p.StockStatus}");
+}
+#endregion
+
+
+#region Question 7
+// Print each product's name along with its position (1-based).
+// Expected format: 1. Chai, 2. Chang, etc.
+
+var q7 = ProductList
+    .Select((p, index) => new
+    {
+        Position = index + 1,
+        p.ProductName
+    });
+
+foreach (var p in q7)
+{
+    Console.WriteLine($"{p.Position}. {p.ProductName}");
+}
+#endregion
+
+
+#region Question 8
+// Sort ProductList by Category ascending,
+// then within each category, sort by UnitPrice descending.
+
+var q8 = ProductList
+    .OrderBy(p => p.Category)
+    .ThenByDescending(p => p.UnitPrice);
+
+foreach (var p in q8)
+{
+    Console.WriteLine(
+        $"{p.Category} - {p.ProductName} - {p.UnitPrice}");
+}
+#endregion
+
+
+#region Question 9
+// Get all products from the "Beverages" category,
+// sorted by UnitsInStock descending.
+// Print name and stock.
+
+var q9 = ProductList
+    .Where(p => p.Category == "Beverages")
+    .OrderByDescending(p => p.UnitsInStock)
+    .Select(p => new
+    {
+        p.ProductName,
+        p.UnitsInStock
+    });
+
+foreach (var p in q9)
+{
+    Console.WriteLine(
+        $"{p.ProductName} - Stock: {p.UnitsInStock}");
+}
+#endregion
+
+
+#region Question 10
+// Using QUERY SYNTAX with a compound from clause,
+// list all orders placed in 1997 or later,
+// showing CustomerID and OrderDate.
+
+var q10 =
+    from o in OrderList
+    from c in CustomerList
+    where o.CustomerID == c.CustomerID
+       && o.OrderDate.Year >= 1997
+    select new
+    {
+        o.CustomerID,
+        o.OrderDate
+    };
+
+foreach (var o in q10)
+{
+    Console.WriteLine(
+        $"{o.CustomerID} - {o.OrderDate:yyyy-MM-dd}");
+}
+#endregion
+
+
+#region Question 11
+// Show position number alongside ProductName.
+
+var q11 = ProductList
+    .Select((p, index) => new
+    {
+        Position = index + 1,
+        ProductName = p.ProductName
+    });
+
+foreach (var p in q11)
+{
+    Console.WriteLine($"{p.Position}. {p.ProductName}");
+}
+#endregion
+
+
+#region Question 12
+// Sort first by word length and then by a
+// case-insensitive sort of the words in an array.
+
+string[] Arr =
+{
+    "aPPLE",
+    "AbAcUs",
+    "bRaNcH",
+    "BlUeBeRrY",
+    "ClOvEr",
+    "cHeRry"
+};
+
+var q12 = Arr
+    .OrderBy(word => word.Length)
+    .ThenBy(word => word, StringComparer.OrdinalIgnoreCase);
+
+foreach (var word in q12)
+{
+    Console.WriteLine(word);
+}
+#endregion
+
+
+#region Question 13
+// Create a list of all words in the array whose second letter
+// is 'i', reversed from the order in the original array.
+
+var q13 = Arr
+    .Where(word => word.Length > 1
+        && char.ToLowerInvariant(word[1]) == 'i')
+    .Reverse()
+    .ToList();
+
+foreach (var word in q13)
+{
+    Console.WriteLine(word);
+}
+#endregion
